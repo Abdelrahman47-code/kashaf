@@ -1,4 +1,5 @@
-# Python 3.8+. The whole pipeline (features.py, solution.py, run.py) and the
-# scorer need only these two libraries; no model, no training step.
-numpy
-pandas
+# Python 3.11+. The whole pipeline (features.py, solution.py, run.py) and the
+# scorer need only these two libraries; no model, no training step. Pinned to the
+# versions verified to reproduce evaluation/results/Kashaf.csv byte for byte.
+numpy==2.3.1
+pandas==2.3.1
