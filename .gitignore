@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------------------------------------
+# This repository is public. The match data is not redistributable, and a correct submission CSV
+# is a near-copy of the private ground truth. Keep both out, forever.
+# ---------------------------------------------------------------------------------------------
+
+# any submission / label file for the whole match
+evaluation/results/*.csv
+evaluation/reports/
+evaluation/scoreboard.csv
+
+# the match data, wherever it is unpacked
+data/
+details/
+*.mp4
+*.txt.bak
+
+# generated caches (parsed per-frame positions)
+.cache/
+kashaf/__pycache__/
+kashaf/dev/__pycache__/
+evaluation/__pycache__/
+starter/__pycache__/
+__pycache__/
+*.py[cod]
+
+# editors
+.idea/
+.vscode/
+.DS_Store

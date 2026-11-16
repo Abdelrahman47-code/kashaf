@@ -1,0 +1,4 @@
+# Python 3.8+. The whole pipeline (features.py, solution.py, run.py) and the
+# scorer need only these two libraries; no model, no training step.
+numpy
+pandas
