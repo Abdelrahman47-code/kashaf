@@ -168,6 +168,35 @@ python evaluation/run_evaluation.py
 
 The output CSV is deterministic: the same data in reproduces the same bytes out. The scorer and
 the public ground truth are self-contained, so `run_evaluation.py` runs on a fresh clone with no
-data present. The match data itself is not in the repository and cannot be  -  it is licensed for
-this competition only and may not be redistributed; the `.gitignore` keeps it, and any submission
-CSV, out permanently.
+data present. The match data itself is not in the repository and cannot be: it is licensed for
+this competition only and may not be redistributed, and the `.gitignore` keeps it, and any
+submission CSV, out permanently.
+
+## 9. Conclusion
+
+We set out from a simple observation: the tracker already sees the ball every frame, so the
+challenge is not detection but *stability* - turning noisy nearest-player geometry into the
+possessions a coach would recognise. The system we built around that is small on purpose: three
+stages, three constants, no model, no dataset. Small enough that every number in it can be
+defended from the match's own tracking signal and the organisers' published results, and small
+enough that the judges can read the whole thing in an hour.
+
+The result of that discipline is an entry we are comfortable explaining line by line. We rank
+first on the public sample (0.4308 spellF1 versus 0.4242 for the best reference baseline) with
+the best turnover timing on the board; we predict a full-match structure - about 329 possessions
+of 19 seconds - that matches the behaviour of the published baselines on the full match; and the
+one place we score "worse" on paper (macroF1) is a decision we made knowingly, after measuring
+that the dead-ball frames we would have gained are cheaper than the live possessions a sloppy
+dead-ball detector would break.
+
+Equally, we would not claim more than the evidence supports. The public window has only
+17 possessions, which is not enough to prove the full-match ranking position from - so our
+expectation of clearing the 0.2433 floor rests on the whole-match signal and the published
+baseline behaviour, and we have said so plainly rather than let it read as a measurement it is
+not. Where the approach is weak (dead-ball recall, the slight turnover lag, identity switches in
+the uncorrected tracking) we have written it down instead of arguing it away.
+
+That is the whole submission: one algorithm, fully inspectable, run end to end in about 20
+seconds, reproducing its file byte for byte. That feels like the right shape for this
+competition - a question with a single honest number at the end, answered by a system anyone
+can read.
