@@ -1,5 +1,7 @@
 # Kashaf — More than a Hack 2027, Phase 1: Ball Possession
 
+![Match banner](banner.png)
+
 Team **Kashaf**'s submission for the *More than a Hack 2027* Phase 1 challenge, organised by
 [Metrica Sports](https://metrica-sports.com), [FC Barcelona](https://www.fcbarcelona.com) and
 the [Mobile World Capital Barcelona](https://www.mwcbarcelona.com).
