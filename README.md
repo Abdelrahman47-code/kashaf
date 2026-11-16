@@ -32,8 +32,8 @@ the structure of the baselines' full-match runs (~330 possessions of ~18 s).
 
 Two numbers we'd rather be honest about than leave out: our macroF1 (0.5264) is *below* the
 baselines' (0.5812–0.6207), and our latency is the best on the board. The first is because we
-predict almost no dead ball - only the one certified stoppage we trust completely - and macroF1
-rewards guessing `D` on roughly a fifth of the graded frames. The organisers' metric documentation
+predict almost no dead ball - only the one restart whose extent we can pin to the frame - and
+macroF1 rewards guessing `D` on roughly a fifth of the graded frames. The organisers' metric documentation
 anticipates exactly this trade: on the ranking metric, a misplaced `D` splits a live possession,
 which costs more than the dead frames it "gains". We measured that trade on the public window,
 it held, and we took the side of precision. The second number - turnovers within a frame of the
@@ -64,14 +64,19 @@ the last known side carries forward: losing sight of the ball doesn't end a poss
 window width is the setting the organisers' own published baseline results show as the best
 full-match choice (their 5-second window wins only on the 5-minute sample).
 
-**3. Almost no dead ball.** Only the certified second-half pre-kickoff stretch (frames
-110 808–113 741 - the lineup, with the kick at 113 742) is labelled `D`. Everything outside the
-two half blocks is `X`. We built two further dead-ball detectors - set-piece tag windows from
-the Smart Tagging, and team-velocity stoppages - and dropped both after measuring them: the
-tags span live play (a free-kick tag covers ~14 s of which ~5 s is actually dead), and players
-drift before and after restarts, so velocity thresholds over- or under-shoot. Either way, `D`
-frames inside real possessions split those possessions and the ranking metric charges the split
-far more than it pays for the correct dead frames. Precision beat recall here; we verified that.
+**3. Almost no dead ball, derived not set.** Only the second-half pre-kickoff is labelled `D`,
+and its endpoints are computed, not typed: the start is the public 2nd-half boundary (110 808,
+from the organisers' `games.py`), the end is the kickoff frame (113 742) located inside the
+Smart Tagging `Kick Off (Start)` window as the moment the ball leaves the centre of the pitch
+(a 3.3 m local minimum of its distance from centre). `kashaf/solution.py: pre_kickoff_slice()`
+produces it with no free-standing constant - see docs/technical.md §2.3. Everything outside the
+two graded half blocks is `X`. We built two further dead-ball detectors - set-piece tag windows
+from the Smart Tagging, and team-velocity stoppages - and dropped both after measuring them:
+the tags span live play (a free-kick tag covers ~14 s of which ~5 s is actually dead), and
+players drift before and after restarts, so velocity thresholds over- or under-shoot. Either
+way, `D` frames inside real possessions split those possessions and the ranking metric charges
+the split far more than it pays for the correct dead frames. Precision beat recall here;
+we verified that.
 
 The full reasoning, including what we tried and dropped, which assets we used and why we
 ignored the others, and where the approach fails, is in
@@ -104,6 +109,7 @@ set MTAH_DATA_DIR=C:\path\to\match\bundle   # Windows
 # export MTAH_DATA_DIR=/path/to/bundle      # macOS / Linux
 
 python -m kashaf.run                        # writes evaluation/results/Kashaf.csv, ~20 s
+python -m kashaf.dev.kickoff_derivation     # optional: show the data behind the D window
 python evaluation/validate_submission.py evaluation/results/Kashaf.csv
 python evaluation/run_evaluation.py         # score against the public 5 minutes
 ```
@@ -119,7 +125,8 @@ and data out permanently.
 ## Repository layout
 
 ```
-games.py                 per-match constants, asset paths, frame alignment (from the organiser repo)
+games.py                 per-match constants, asset paths, frame alignment (public organiser data;
+                          the graded half blocks come from here)
 evaluation/
   possession_metrics.py  the metric - the exact file that produces the official board
   run_evaluation.py      the scorer
@@ -127,7 +134,7 @@ evaluation/
   gt/                    the public 5-minute ground truth (ships with the organiser repo)
 kashaf/
   run.py                 canonical entry point - writes evaluation/results/Kashaf.csv
-  solution.py            the model: hysteresis -> majority vote -> labels
+  solution.py            the model: hysteresis -> majority vote -> derived D block -> labels
   features.py            vectorised ATD parser and per-frame signal arrays
   dev/                   the experiments behind the design choices (dead-ball detectors,
                          hysteresis margins, window width) - validation scripts, not part
